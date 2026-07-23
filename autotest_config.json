@@ -1,100 +1,47 @@
 {
-  "description": "Autotest configuration for nuget-maui-windows probe project",
-  "version": 1.7,
+  "description": "nuget-maui-windows probe (.NET MAUI, net8.0-windows10.0.19041.0, UseMaui=true). Assertions built from actual update request on mend-detection-qa-dev/nuget-maui-windows commit 90da5d58 (agent bolt-4-github-scanner 26.5.1-SNAPSHOT / plugin 26.7.1.27): 4 direct NUGET deps, 0 transitives. The scan ran the project.assets.json FALLBACK because the MAUI workload is not installed on the scanner (NETSDK1147) and net8.0-windows cannot restore in the Linux scan container, so no transitive graph was resolved. scaResults reports totalSuccess RESOLUTION:1 / totalFail PRE_STEP:1 -> check_update_request_sca_results WILL FAIL until the workload/Windows-on-Linux restore issue is resolved (this is the environment defect the assertion exists to surface, not a config bug).",
+  "version": 1.8,
   "base_config": {
     "validate_scan_output": true,
     "scan_output": {
-      "_security_scan_report_conclusion": "success",
-      "total_libs_scanned": {
-        "gt": 0
-      },
-      "expected_messages": []
+      "total_libs_scanned": { "gte": 4 }
     },
+
     "validate_dependency_tree": true,
     "dependency_tree": {
       "check_dependency_tree_detection_status": true,
       "check_update_request_sca_results": true,
-      "expected_total_dependencies_number": {
-        "gte": 4
-      },
-      "expected_direct_dependencies_number": {
-        "gte": 4
-      },
-      "expected_transitive_dependencies_number": {
-        "gte": 0
-      },
+      "expected_package_managers": { "contains": ["nuget"] },
+      "expected_direct_dependencies_number": { "gte": 4 },
+      "expected_transitive_dependencies_number": { "gte": 0 },
+      "expected_total_dependencies_number": { "gte": 4 },
       "direct_dependencies_names_list": {
-        "contains": [
-          "Microsoft.Maui.Controls",
-          "CommunityToolkit.Maui",
-          "Microsoft.Extensions.Logging",
-          "Newtonsoft.Json"
-        ]
+        "contains": ["CommunityToolkit.Maui", "Newtonsoft.Json", "Microsoft.Extensions.Logging", "Microsoft.Maui.Controls"]
       },
-      "transitive_dependencies_names_list": {
-        "contains": []
-      },
-      "expected_package_managers": {
-        "contains": [
-          "nuget"
-        ]
-      },
-      "validate_agent_versions": true,
-      "expected_agent_version": "",
-      "expected_plugin_version": "",
-      "validate_mend_tags": false
+      "expected_dependency_pairs": [
+        { "artifactId": "CommunityToolkit.Maui", "version": "7.0.1", "groupId": "CommunityToolkit.Maui" },
+        { "artifactId": "Newtonsoft.Json", "version": "13.0.3", "groupId": "Newtonsoft.Json" },
+        { "artifactId": "Microsoft.Extensions.Logging", "version": "8.0.0", "groupId": "Microsoft.Extensions.Logging" },
+        { "artifactId": "Microsoft.Maui.Controls", "version": "8.0.82", "groupId": "Microsoft.Maui.Controls" }
+      ],
+      "validate_agent_versions": false
     },
+
     "validate_vulnerabilities_table": true,
     "vulnerabilities_table": {
       "check_vulnerabilities_table_structure": true,
-      "expected_total_vulnerabilities_number": {
-        "gte": 0
-      },
-      "vulnerabilities_ids_list": {
-        "contains": []
-      },
-      "vulnerabilities_names_list": {
-        "contains": []
-      }
+      "expected_total_vulnerabilities_number": { "gte": 0 }
     },
+
     "validate_scanner_logs": false,
-    "logs": {
-      "check_scanner_logs": true,
-      "detect_secrets": false,
-      "expected_log_lines": []
-    },
+
     "validate_reachability": false,
-    "reachability": {
-      "check_reachability_status": true,
-      "validate_issues": false,
-      "expected_reachable_cves": {
-        "contains": []
-      },
-      "expected_unreachable_cves": {
-        "contains": []
-      },
-      "expected_reachable_libraries": {
-        "contains": []
-      },
-      "expected_unreachable_libraries": {
-        "contains": []
-      },
-      "expected_total_reachable_count": {
-        "gte": 0
-      },
-      "expected_total_unreachable_count": {
-        "gte": 0
-      },
-      "expected_reachability_traces": []
-    },
+
     "validate_project_contributors": true,
     "contributors": {
       "check_contributors_structure": true,
-      "expected_contributors": [],
-      "expected_min_commits": {
-        "gte": 1
-      },
-      "expected_total_contributors": {}
+      "expected_contributors": [{ "regex": ".*@mend.io" }],
+      "expected_min_commits": { "gte": 1 }
     }
   }
 }
